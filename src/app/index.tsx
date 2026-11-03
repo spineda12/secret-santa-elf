@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import { useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from "react-native";
 import { draw } from "../lib/draw";
@@ -78,6 +79,9 @@ export default function Home() {
       />
 
       <View style={s.card}>
+          <Link href="/events" style={{ color: "#b3001b", fontWeight: "600" }}>
+          Organizer login / My events →
+        </Link>
         <Text style={s.h2}>1. Event name</Text>
         <TextInput style={s.input} value={eventName} onChangeText={setEventName} />
 
