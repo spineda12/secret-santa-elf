@@ -13,6 +13,7 @@ export default function RootLayout() {
     >
       <Stack.Screen name="index" options={{ title: "Secret Santa Elf" }} />
       <Stack.Screen name="me" options={{ title: "My Secret Santa" }} />
+      <Stack.Screen name="events" options={{ title: "My Events" }} />
     </Stack>
   );
 }
