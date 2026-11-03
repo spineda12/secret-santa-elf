@@ -1,56 +1,65 @@
-# Welcome to your Expo app 👋
+# 🎅 Secret Santa Elf
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A Secret Santa web app where **participants never need an account**. The organizer adds names and "can't draw each other" exceptions (like couples), draws, and sends each person a private link. Each person sees who they're buying for and can edit their own wishlist.
 
-## Get started
+**Live demo:** https://dist-psi-weld-ym950itwhi.vercel.app
 
-1. Install dependencies
+![Secret Santa Elf banner](assets/images/background.jpg)
 
-   ```bash
-   npm install
-   ```
+## Features
 
-2. Start the app
+- Draw names with exclusions, so couples never draw each other
+- Private link per person, with no sign-up or password
+- Each person edits their own wishlist, and their Santa sees updates
+- Responsive design that works on phones and desktops
 
-   ```bash
-   npx expo start
-   ```
+## Tech stack
 
-In the output, you'll find options to open the app in a
+- **Expo + React Native (web)** with Expo Router and TypeScript
+- **Supabase** (Postgres) for storage
+- **Vercel** for hosting
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## How it works
 
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+1. The organizer enters names and exclusions in the browser.
+2. A constrained shuffle runs client-side. It retries until no one draws themselves or an excluded person.
+3. The result is saved through a Postgres function (`create_event`), which returns a random secret token for each person.
+4. Each person opens `/me?t=TOKEN`. The token identifies them, with no login.
 
-## Get a fresh project
+## Security design
 
-When you're ready, run:
+- Row Level Security is enabled on all tables with **no public policies**, so the public key can't read the data directly.
+- All access goes through three `SECURITY DEFINER` functions (`create_event`, `get_me`, `update_wishlist`) that require a valid token.
+- Tokens are 128-bit random values, so links can't be guessed.
+- The app never shows the organizer who drew whom.
+
+## Run locally
 
 ```bash
-npm run reset-project
+git clone https://github.com/spineda12/secret-santa-elf.git
+cd secret-santa-elf
+npm install
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Create a `.env` file:
 
-### Other setup steps
+```
+EXPO_PUBLIC_SUPABASE_URL=your-project-url
+EXPO_PUBLIC_SUPABASE_KEY=your-publishable-key
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Create the tables and functions in your Supabase project (SQL editor), then:
 
-## Learn more
+```bash
+npx expo start --web
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Roadmap
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- [ ] Organizer login (Google) with a "My events" dashboard and link resend
+- [ ] Custom domain
+- [ ] Price limit and event date
 
-## Join the community
+## Author
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Silvia Pineda · [GitHub](https://github.com/spineda12)
